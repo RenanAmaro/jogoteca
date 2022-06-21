@@ -1,2 +1,13 @@
 {
+    "cSpell.words": [
+        "enzo",
+        "jogoteca",
+        "renan",
+        "sqlalchemy",
+        "usuario",
+        "Usuario",
+        "usuarios"
+    ],
+    "python.linting.pylintEnabled": true,
+    "python.linting.enabled": true
 }

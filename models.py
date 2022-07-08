@@ -1,6 +1,15 @@
 from jogoteca import db
 
+
 class Jogos(db.Model):
+    """_summary_
+
+    Args:
+        db (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     nome = db.Column(db.String(50), nullable=False)
     categoria = db.Column(db.String(40), nullable=False)
@@ -11,6 +20,14 @@ class Jogos(db.Model):
 
 
 class Usuarios(db.Model):
+    """_summary_
+
+    Args:
+        db (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     nome = db.Column(db.String(20), nullable=False)
     nickname = db.Column(db.String(8), nullable=False)

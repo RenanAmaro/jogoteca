@@ -1,6 +1,8 @@
-from flask import Flask, redirect, render_template, request, session, flash, url_for
+from distutils.command.upload import upload
+from flask import Flask, redirect, render_template, request, send_from_directory, session, flash, url_for
 from jogoteca import app, db
 from models import Jogos, Usuarios
+from helpers import recupera_imagem
 
 
 @app.route('/')
@@ -34,6 +36,46 @@ def criar():
     db.session.add(novo_jogo)
     db.session.commit()
 
+    upload_path = app.config['UPLOAD_PATH']
+    arquivo = request.files['arquivo']
+    arquivo.save(f'{upload_path}/capa{novo_jogo.id}.jpg')
+
+    return redirect(url_for('index'))
+
+
+@app.route('/editar/<int:id>')
+def editar(id):
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        return redirect(url_for('login', proxima=url_for('editar')))
+    jogo = Jogos.query.filter_by(id=id).first()
+    capa_jogo = recupera_imagem(id)
+    return render_template('editar.html', titulo='Editando Jogo', jogo=jogo, capa_jogo = capa_jogo)
+
+
+@app.route('/atualizar', methods=['POST', ])
+def atualizar():
+    jogo = Jogos.query.filter_by(id=request.form['id']).first()
+    jogo.nome = request.form['nome']
+    jogo.categoria = request.form['categoria']
+    jogo.console = request.form['console']
+    db.session.add(jogo)
+    db.session.commit()
+
+    arquivo = request.files['arquivo']
+    upload_path = app.config['UPLOAD_PATH']
+    arquivo.save(f'{upload_path}/capa{jogo.id}.jpg')
+
+    return redirect(url_for('index'))
+
+
+@app.route('/deletar/<int:id>')
+def deletar(id):
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        return redirect(url_for('login'))
+
+    Jogos.query.filter_by(id=id).delete()
+    db.session.commit()
+    flash('Jogo deletado com sucesso!')
     return redirect(url_for('index'))
 
 
@@ -67,3 +109,8 @@ def logout():
     session['usuario_logado'] = None
     flash('Logout efetuado com sucesso!')
     return redirect(url_for('index'))
+
+
+@app.route('/uploads/<nome_arquivo>')
+def imagem(nome_arquivo):
+    return send_from_directory('uploads', nome_arquivo)

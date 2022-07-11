@@ -1,1 +1,1 @@
-"Jogoteca Alura"
+"Jogoteca"
